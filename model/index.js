@@ -1,5 +1,12 @@
-const fs = require('fs/promises');
-const contacts = require('./contacts.json');
+/* eslint-disable quotes */
+/* eslint-disable semi */
+/* eslint-disable object-curly-spacing */
+
+const fs = require("fs/promises");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+// const contacts = require("./contacts.json");
+const contactsPath = path.join(__dirname, "./contacts.json");
 
 const listContacts = async () => {};
 
