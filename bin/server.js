@@ -1,4 +1,9 @@
-const app = require('../app');
+/* eslint-disable quotes */
+/* eslint-disable semi */
+/* eslint-disable object-curly-spacing */
+/* eslint-disable indent */
+
+const app = require("../app");
 
 const PORT = process.env.PORT || 3000;
 
