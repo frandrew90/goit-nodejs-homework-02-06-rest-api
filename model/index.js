@@ -2,17 +2,20 @@
 /* eslint-disable semi */
 /* eslint-disable object-curly-spacing */
 /* eslint-disable indent */
+/* eslint-disable comma-dangle */
 
-const fs = require("fs/promises");
-const path = require("path");
-const { v4: uuidv4 } = require("uuid");
+// const fs = require("fs/promises");
+// const path = require("path");
+// const { v4: uuidv4 } = require("uuid");
 
-const contactsPath = path.join(__dirname, "./contacts.json");
+// const contactsPath = path.join(__dirname, "./contacts.json");
+
+const contactSchema = require("../schemas/contactsSchema.js");
 
 const listContacts = async () => {
   try {
-    const contacts = await fs.readFile(contactsPath, "utf-8");
-    return JSON.parse(contacts);
+    const contacts = await contactSchema.find({});
+    return contacts;
   } catch (err) {
     console.log(err.message);
   }
@@ -20,11 +23,7 @@ const listContacts = async () => {
 
 const getContactById = async (contactId) => {
   try {
-    const contacts = await listContacts();
-    const contactById = contacts.find(
-      // eslint-disable-next-line comma-dangle
-      (contact) => contact.id.toString() === contactId
-    );
+    const contactById = await contactSchema.findById(contactId);
     return contactById;
   } catch (err) {
     console.log(err.message);
@@ -33,13 +32,8 @@ const getContactById = async (contactId) => {
 
 const removeContact = async (contactId) => {
   try {
-    const contacts = await listContacts();
-    const newContactList = contacts.filter(
-      // eslint-disable-next-line comma-dangle
-      (contact) => contact.id.toString() !== contactId.toString()
-    );
-    await fs.writeFile(contactsPath, JSON.stringify(newContactList));
-    return newContactList;
+    const removedContact = await contactSchema.findByIdAndRemove(contactId);
+    return removedContact;
   } catch (err) {
     console.log(err.message);
   }
@@ -47,14 +41,7 @@ const removeContact = async (contactId) => {
 
 const addContact = async (body) => {
   try {
-    const contacts = await listContacts();
-    const id = uuidv4();
-    const newContact = {
-      id,
-      ...body,
-    };
-    contacts.push(newContact);
-    await fs.writeFile(contactsPath, JSON.stringify(contacts));
+    const newContact = await contactSchema.create(body);
     return newContact;
   } catch (err) {
     console.log(err.message);
@@ -63,25 +50,32 @@ const addContact = async (body) => {
 
 const updateContact = async (contactId, body) => {
   try {
-    const contactByID = await getContactById(contactId);
-    if (!contactByID) {
-      console.log(`There is no contact with id: ${contactId}`);
-      return;
-    }
-    const updatedContact = {
+    const contactForUpdate = await contactSchema.findByIdAndUpdate(
       contactId,
-      ...body,
-    };
-    const contacts = await listContacts();
-    const newContactList = contacts.filter(
-      // eslint-disable-next-line comma-dangle
-      (contact) => contact.id.toString() !== contactId.toString()
+      body,
+      {
+        new: true,
+      }
     );
-    newContactList.push(updatedContact);
-    await fs.writeFile(contactsPath, JSON.stringify(newContactList));
-    return updatedContact;
-  } catch (err) {
-    console.log(err.message);
+    return contactForUpdate;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const updateStatusContact = async (contactId, body) => {
+  try {
+    const { favorite } = body;
+    const contactForUpdate = await contactSchema.findByIdAndUpdate(
+      contactId,
+      { favorite },
+      {
+        new: true,
+      }
+    );
+    return contactForUpdate;
+  } catch (error) {
+    console.log(error.message);
   }
 };
 
@@ -91,4 +85,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 };
