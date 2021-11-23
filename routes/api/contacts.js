@@ -2,6 +2,7 @@
 /* eslint-disable semi */
 /* eslint-disable object-curly-spacing */
 /* eslint-disable indent */
+/* eslint-disable comma-dangle */
 
 const express = require("express");
 const router = new express.Router();
@@ -12,6 +13,7 @@ const {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 } = require("../../model/index.js");
 
 router.get("/", async (req, res, next) => {
@@ -92,8 +94,27 @@ router.put("/:contactId", validation, async (req, res, next) => {
     }
     res.status(200).json({
       status: "success",
-      code: 201,
+      code: 200,
       data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch("/:contactId/favorite", validation, async (req, res, next) => {
+  const { contactId } = req.params;
+  try {
+    const data = await updateStatusContact(contactId, req.body);
+    if (!data) {
+      const error = new Error(`There is no contact with id: ${contactId}`);
+      error.status = 404;
+      throw error;
+    }
+    res.status(200).json({
+      status: "success",
+      code: 200,
+      data: data,
     });
   } catch (error) {
     next(error);
