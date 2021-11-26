@@ -4,7 +4,7 @@
 
 const joi = require("joi");
 
-const validation = (req, res, next) => {
+const contactsValidation = (req, res, next) => {
   const validationSchema = joi.object({
     name: joi.string().min(3).max(30).required(),
     email: joi.string().email({ minDomainSegments: 2 }).required(),
@@ -20,4 +20,4 @@ const validation = (req, res, next) => {
   next();
 };
 
-module.exports = validation;
+module.exports = { contactsValidation };

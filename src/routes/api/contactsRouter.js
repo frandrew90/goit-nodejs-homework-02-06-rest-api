@@ -6,7 +6,7 @@
 
 const express = require("express");
 const router = new express.Router();
-const validation = require("../../middlewares/validation.js");
+const { contactsValidation } = require("../../middlewares/validation.js");
 const {
   listContacts,
   getContactById,
@@ -14,7 +14,7 @@ const {
   addContact,
   updateContact,
   updateStatusContact,
-} = require("../../model/index.js");
+} = require("../../../model/index.js");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -44,7 +44,7 @@ router.get("/:contactId", async (req, res, next) => {
   }
 });
 
-router.post("/", validation, async (req, res, next) => {
+router.post("/", contactsValidation, async (req, res, next) => {
   try {
     const data = await addContact(req.body);
     res.status(201).json({
@@ -77,7 +77,7 @@ router.delete("/:contactId", async (req, res, next) => {
   }
 });
 
-router.put("/:contactId", validation, async (req, res, next) => {
+router.put("/:contactId", contactsValidation, async (req, res, next) => {
   const { contactId } = req.params;
   const { name, email, phone } = req.body;
   try {
@@ -102,23 +102,27 @@ router.put("/:contactId", validation, async (req, res, next) => {
   }
 });
 
-router.patch("/:contactId/favorite", validation, async (req, res, next) => {
-  const { contactId } = req.params;
-  try {
-    const data = await updateStatusContact(contactId, req.body);
-    if (!data) {
-      const error = new Error(`There is no contact with id: ${contactId}`);
-      error.status = 404;
-      throw error;
+router.patch(
+  "/:contactId/favorite",
+  contactsValidation,
+  async (req, res, next) => {
+    const { contactId } = req.params;
+    try {
+      const data = await updateStatusContact(contactId, req.body);
+      if (!data) {
+        const error = new Error(`There is no contact with id: ${contactId}`);
+        error.status = 404;
+        throw error;
+      }
+      res.status(200).json({
+        status: "success",
+        code: 200,
+        data: data,
+      });
+    } catch (error) {
+      next(error);
     }
-    res.status(200).json({
-      status: "success",
-      code: 200,
-      data: data,
-    });
-  } catch (error) {
-    next(error);
   }
-});
+);
 
-module.exports = router;
+module.exports = { contactsRouter: router };
