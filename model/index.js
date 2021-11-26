@@ -21,7 +21,7 @@ const listContacts = async () => {
   }
 };
 
-const getContactById = async (contactId) => {
+const contactFinderById = async (contactId) => {
   try {
     const contactById = await contactSchema.findById(contactId);
     return contactById;
@@ -30,7 +30,7 @@ const getContactById = async (contactId) => {
   }
 };
 
-const removeContact = async (contactId) => {
+const contactRemover = async (contactId) => {
   try {
     const removedContact = await contactSchema.findByIdAndRemove(contactId);
     return removedContact;
@@ -39,7 +39,7 @@ const removeContact = async (contactId) => {
   }
 };
 
-const addContact = async (body) => {
+const contactAdder = async (body) => {
   try {
     const newContact = await contactSchema.create(body);
     return newContact;
@@ -48,7 +48,7 @@ const addContact = async (body) => {
   }
 };
 
-const updateContact = async (contactId, body) => {
+const contactUpdater = async (contactId, body) => {
   try {
     const contactForUpdate = await contactSchema.findByIdAndUpdate(
       contactId,
@@ -63,7 +63,7 @@ const updateContact = async (contactId, body) => {
   }
 };
 
-const updateStatusContact = async (contactId, body) => {
+const contactStatusUpdater = async (contactId, body) => {
   try {
     const { favorite } = body;
     const contactForUpdate = await contactSchema.findByIdAndUpdate(
@@ -81,9 +81,9 @@ const updateStatusContact = async (contactId, body) => {
 
 module.exports = {
   listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-  updateStatusContact,
+  contactFinderById,
+  contactRemover,
+  contactAdder,
+  contactUpdater,
+  contactStatusUpdater,
 };
