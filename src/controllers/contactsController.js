@@ -11,7 +11,7 @@ const {
   contactAdder,
   contactUpdater,
   contactStatusUpdater,
-} = require("../../model/index.js");
+} = require("../services/contactServices.js");
 
 const getContacts = async (req, res) => {
   const data = await listContacts();

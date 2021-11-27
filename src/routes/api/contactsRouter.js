@@ -18,13 +18,9 @@ const {
 } = require("../../controllers/contactsController.js");
 
 router.get("/", asyncWrapper(getContacts));
-
 router.get("/:contactId", asyncWrapper(getContactById));
-
 router.post("/", contactsValidation, asyncWrapper(addContact));
-
 router.delete("/:contactId", asyncWrapper(deleteContact));
-
 router.put("/:contactId", contactsValidation, asyncWrapper(UpdateContact));
 
 router.patch(
