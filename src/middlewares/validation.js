@@ -1,8 +1,6 @@
-/* eslint-disable quotes */
-/* eslint-disable semi */
-/* eslint-disable object-curly-spacing */
-
 const joi = require("joi");
+
+const { ValidationError } = require("../helpers/errors");
 
 const contactsValidation = (req, res, next) => {
   const validationSchema = joi.object({
@@ -14,7 +12,7 @@ const contactsValidation = (req, res, next) => {
 
   const validationResult = validationSchema.validate(req.body);
   if (validationResult.error) {
-    return res.status(400).json({ status: validationResult.error.details });
+    next(new ValidationError(validationResult.error.details));
   }
 
   next();

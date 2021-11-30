@@ -1,9 +1,3 @@
-/* eslint-disable quotes */
-/* eslint-disable semi */
-/* eslint-disable object-curly-spacing */
-/* eslint-disable indent */
-/* eslint-disable comma-dangle */
-
 const contactSchema = require("../db/schemas/contactsSchema.js");
 
 const listContacts = async () => {
@@ -13,6 +7,7 @@ const listContacts = async () => {
 
 const contactFinderById = async (contactId) => {
   const contactById = await contactSchema.findById(contactId);
+
   return contactById;
 };
 

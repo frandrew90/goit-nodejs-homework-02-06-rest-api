@@ -1,9 +1,3 @@
-/* eslint-disable quotes */
-/* eslint-disable semi */
-/* eslint-disable object-curly-spacing */
-/* eslint-disable indent */
-/* eslint-disable comma-dangle */
-
 const {
   listContacts,
   contactFinderById,
@@ -12,6 +6,8 @@ const {
   contactUpdater,
   contactStatusUpdater,
 } = require("../services/contactServices.js");
+
+const { WrongParametersError } = require("../helpers/errors");
 
 const getContacts = async (req, res) => {
   const data = await listContacts();
@@ -23,7 +19,9 @@ const getContactById = async (req, res) => {
 
   const data = await contactFinderById(contactId);
   if (!data) {
-    const error = new Error(`There is no contact with id: ${contactId}`);
+    const error = new WrongParametersError(
+      `There is no contact with id: ${contactId}`
+    );
     error.status = 404;
     throw error;
   }
@@ -48,7 +46,9 @@ const deleteContact = async (req, res) => {
 
   const data = await contactRemover(contactId);
   if (!data) {
-    const error = new Error(`There is no contact with id: ${contactId}`);
+    const error = new WrongParametersError(
+      `There is no contact with id: ${contactId}`
+    );
     error.status = 404;
     throw error;
   }
@@ -71,7 +71,9 @@ const UpdateContact = async (req, res) => {
     throw error;
   }
   if (!data) {
-    const error = new Error(`There is no contact with id: ${contactId}`);
+    const error = new WrongParametersError(
+      `There is no contact with id: ${contactId}`
+    );
     error.status = 404;
     throw error;
   }
@@ -87,7 +89,9 @@ const updateContactStatus = async (req, res) => {
 
   const data = await contactStatusUpdater(contactId, req.body);
   if (!data) {
-    const error = new Error(`There is no contact with id: ${contactId}`);
+    const error = new WrongParametersError(
+      `There is no contact with id: ${contactId}`
+    );
     error.status = 404;
     throw error;
   }
