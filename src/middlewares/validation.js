@@ -12,7 +12,7 @@ const contactsValidation = (req, res, next) => {
 
   const validationResult = validationSchema.validate(req.body);
   if (validationResult.error) {
-    next(new ValidationError(validationResult.error.details));
+    next(new ValidationError(validationResult.error));
   }
 
   next();
