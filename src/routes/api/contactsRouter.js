@@ -2,6 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const { contactsValidation } = require("../../middlewares/validation.js");
 const { asyncWrapper } = require("../../helpers/apiHelpers.js");
+const { authValidation } = require("../../middlewares/authValidation.js");
 const {
   getContactsController,
   getContactByIdController,
@@ -11,10 +12,23 @@ const {
   updateContactStatusController,
 } = require("../../controllers/contactsController.js");
 
-router.get("/", asyncWrapper(getContactsController));
-router.get("/:contactId", asyncWrapper(getContactByIdController));
-router.post("/", contactsValidation, asyncWrapper(addContactController));
-router.delete("/:contactId", asyncWrapper(deleteContactController));
+router.get("/", authValidation, asyncWrapper(getContactsController));
+router.get(
+  "/:contactId",
+  authValidation,
+  asyncWrapper(getContactByIdController)
+);
+router.post(
+  "/",
+  authValidation,
+  contactsValidation,
+  asyncWrapper(addContactController)
+);
+router.delete(
+  "/:contactId",
+  authValidation,
+  asyncWrapper(deleteContactController)
+);
 router.put(
   "/:contactId",
   contactsValidation,
