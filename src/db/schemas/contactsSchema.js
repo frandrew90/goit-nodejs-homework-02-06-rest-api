@@ -1,10 +1,4 @@
-/* eslint-disable quotes */
-/* eslint-disable semi */
-/* eslint-disable object-curly-spacing */
-/* eslint-disable indent */
-/* eslint-disable comma-dangle */
-
-const { Schema, model } = require("mongoose");
+const { Schema, model, SchemaTypes } = require("mongoose");
 
 const contactsSchema = new Schema(
   {
@@ -21,6 +15,10 @@ const contactsSchema = new Schema(
     favorite: {
       type: Boolean,
       default: false,
+    },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: "user",
     },
   },
   {

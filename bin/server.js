@@ -1,8 +1,3 @@
-/* eslint-disable quotes */
-/* eslint-disable semi */
-/* eslint-disable object-curly-spacing */
-/* eslint-disable indent */
-
 const app = require("../app");
 const mongoose = require("mongoose");
 
