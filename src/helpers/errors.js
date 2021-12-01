@@ -12,7 +12,23 @@ class WrongParametersError extends Error {
   }
 }
 
+class NotAuthorizedError extends Error {
+  constructor(message) {
+    super(message);
+    this.status = 401;
+  }
+}
+
+class ConflictError extends Error {
+  constructor(message) {
+    super(message);
+    this.status = 409;
+  }
+}
+
 module.exports = {
   ValidationError,
   WrongParametersError,
+  NotAuthorizedError,
+  ConflictError,
 };

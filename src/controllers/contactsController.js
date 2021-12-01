@@ -9,21 +9,17 @@ const {
 
 const { WrongParametersError } = require("../helpers/errors");
 
-const getContacts = async (req, res) => {
+const getContactsController = async (req, res) => {
   const data = await listContacts();
   res.json({ status: "success", code: 200, data });
 };
 
-const getContactById = async (req, res) => {
+const getContactByIdController = async (req, res) => {
   const { contactId } = req.params;
 
   const data = await contactFinderById(contactId);
   if (!data) {
-    const error = new WrongParametersError(
-      `There is no contact with id: ${contactId}`
-    );
-    error.status = 404;
-    throw error;
+    throw new WrongParametersError(`There is no contact with id: ${contactId}`);
   }
   res.json({
     status: "success",
@@ -32,7 +28,7 @@ const getContactById = async (req, res) => {
   });
 };
 
-const addContact = async (req, res) => {
+const addContactController = async (req, res) => {
   const data = await contactAdder(req.body);
   res.status(201).json({
     status: "success",
@@ -41,16 +37,12 @@ const addContact = async (req, res) => {
   });
 };
 
-const deleteContact = async (req, res) => {
+const deleteContactController = async (req, res) => {
   const { contactId } = req.params;
 
   const data = await contactRemover(contactId);
   if (!data) {
-    const error = new WrongParametersError(
-      `There is no contact with id: ${contactId}`
-    );
-    error.status = 404;
-    throw error;
+    throw new WrongParametersError(`There is no contact with id: ${contactId}`);
   }
   res.json({
     status: "success",
@@ -60,22 +52,16 @@ const deleteContact = async (req, res) => {
   });
 };
 
-const UpdateContact = async (req, res) => {
+const UpdateContactController = async (req, res) => {
   const { contactId } = req.params;
   const { name, email, phone } = req.body;
 
   const data = await contactUpdater(contactId, req.body);
   if (!name ?? !email ?? !phone) {
-    const error = new Error("Please enter a correct values");
-    error.status = 400;
-    throw error;
+    throw new WrongParametersError("Please enter a correct values");
   }
   if (!data) {
-    const error = new WrongParametersError(
-      `There is no contact with id: ${contactId}`
-    );
-    error.status = 404;
-    throw error;
+    throw new WrongParametersError(`There is no contact with id: ${contactId}`);
   }
   res.status(200).json({
     status: "success",
@@ -84,16 +70,12 @@ const UpdateContact = async (req, res) => {
   });
 };
 
-const updateContactStatus = async (req, res) => {
+const updateContactStatusController = async (req, res) => {
   const { contactId } = req.params;
 
   const data = await contactStatusUpdater(contactId, req.body);
   if (!data) {
-    const error = new WrongParametersError(
-      `There is no contact with id: ${contactId}`
-    );
-    error.status = 404;
-    throw error;
+    throw new WrongParametersError(`There is no contact with id: ${contactId}`);
   }
   res.status(200).json({
     status: "success",
@@ -103,10 +85,10 @@ const updateContactStatus = async (req, res) => {
 };
 
 module.exports = {
-  getContacts,
-  getContactById,
-  addContact,
-  deleteContact,
-  UpdateContact,
-  updateContactStatus,
+  getContactsController,
+  getContactByIdController,
+  addContactController,
+  deleteContactController,
+  UpdateContactController,
+  updateContactStatusController,
 };

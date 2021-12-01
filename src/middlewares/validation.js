@@ -18,4 +18,19 @@ const contactsValidation = (req, res, next) => {
   next();
 };
 
-module.exports = { contactsValidation };
+const userValidation = (req, res, next) => {
+  const validationSchema = joi.object({
+    email: joi.string().required(),
+    password: joi.string().required(),
+    subscription: joi.string(),
+    token: joi.string(),
+  });
+
+  const validationResult = validationSchema.validate(req.body);
+  if (validationResult.error) {
+    next(new ValidationError(validationResult.error));
+  }
+  next();
+};
+
+module.exports = { contactsValidation, userValidation };
