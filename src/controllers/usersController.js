@@ -3,24 +3,34 @@ const {
   loginUser,
   logoutUser,
   getCurrentUser,
+  updateAvatar,
 } = require("../services/usersServices");
 
 const User = require("../db/schemas/usersSchema");
 
 const jwt = require("jsonwebtoken");
 
+const gravatar = require("gravatar");
+
 const { SECRET_KEY } = process.env;
 
 const { NotAuthorizedError, ConflictError } = require("../helpers/errors");
 
+const fs = require("fs");
+
+const path = require("path");
+
+const jimp = require("jimp");
+
 const createUserController = async (req, res) => {
   const { email, password } = req.body;
+  const avatar = gravatar.url(email, { s: 200 }, false);
   const emailInUse = await User.findOne({ email });
   if (emailInUse) {
     throw new ConflictError(`Email:${email} in use`);
   }
 
-  const user = new User({ email });
+  const user = new User({ email, avatarURL: avatar });
   user.setPassword(password);
   const data = await createUser(user);
 
@@ -73,9 +83,33 @@ const getCurrentUserController = async (req, res) => {
   });
 };
 
+const updateAvatarController = async (req, res) => {
+  const { _id } = req.user;
+  const { path: UPLOAD_DIR, originalname } = req.file;
+  const [fileExt] = originalname.split(".").reverse();
+  const fileName = `${_id}.${fileExt}`;
+  const DEST_DIR = path.join(__dirname, "../../", "public/avatars", fileName);
+  if (!_id) {
+    throw new NotAuthorizedError("Not authorized");
+  }
+
+  await jimp.read(UPLOAD_DIR).then((originalname) => {
+    return originalname.resize(250, 250).write(UPLOAD_DIR);
+  });
+  await fs.rename(UPLOAD_DIR, DEST_DIR, () => {});
+  const avatar = path.join("avatars", fileName);
+  const data = await updateAvatar(_id, avatar);
+  await res.json({
+    status: "OK",
+    code: 200,
+    avatarURL: data,
+  });
+};
+
 module.exports = {
   createUserController,
   loginUserController,
   logoutUserController,
   getCurrentUserController,
+  updateAvatarController,
 };
