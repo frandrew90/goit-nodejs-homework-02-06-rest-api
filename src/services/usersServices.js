@@ -1,6 +1,4 @@
 const User = require("../db/schemas/usersSchema");
-// const bcrypt = require("bcryptjs");
-// const { NotAuthorizedError } = require("../helpers/errors");
 
 const createUser = async (body) => {
   const user = await User.create(body);
@@ -21,4 +19,21 @@ const getCurrentUser = async (_id) => {
   return user;
 };
 
-module.exports = { createUser, loginUser, logoutUser, getCurrentUser };
+const updateAvatar = async (_id, avatar) => {
+  console.log("==============================");
+  console.log(avatar);
+  const { avatarURL } = await User.findByIdAndUpdate(_id, {
+    avatarURL: avatar,
+  });
+  console.log("==============================");
+  console.log(avatarURL);
+  return avatarURL;
+};
+
+module.exports = {
+  createUser,
+  loginUser,
+  logoutUser,
+  getCurrentUser,
+  updateAvatar,
+};

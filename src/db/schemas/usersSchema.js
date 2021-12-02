@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = process.env;
+const gravatar = require("gravatar");
 
 const userSchema = new Schema(
   {
@@ -45,6 +46,10 @@ userSchema.methods.comparePassword = function(password) {
 userSchema.methods.createToken = function() {
   const payload = { _id: this._id };
   return jwt.sign(payload, SECRET_KEY);
+};
+
+userSchema.methods.createAvatar = function createAvatarUrl(email) {
+  return gravatar.url(email, { s: 200 });
 };
 
 const User = model("user", userSchema);
