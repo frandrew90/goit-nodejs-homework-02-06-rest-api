@@ -98,7 +98,6 @@ const updateAvatarController = async (req, res) => {
   });
   await fs.rename(UPLOAD_DIR, DEST_DIR, () => {});
   const avatar = path.join("avatars", fileName);
-  console.log(avatar);
   const data = await updateAvatar(_id, avatar);
   await res.json({
     status: "OK",

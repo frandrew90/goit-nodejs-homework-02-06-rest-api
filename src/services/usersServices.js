@@ -20,13 +20,9 @@ const getCurrentUser = async (_id) => {
 };
 
 const updateAvatar = async (_id, avatar) => {
-  console.log("==============================");
-  console.log(avatar);
   const { avatarURL } = await User.findByIdAndUpdate(_id, {
     avatarURL: avatar,
   });
-  console.log("==============================");
-  console.log(avatarURL);
   return avatarURL;
 };
 
