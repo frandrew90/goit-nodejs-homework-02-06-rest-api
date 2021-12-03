@@ -4,9 +4,11 @@ const {
   logoutUser,
   getCurrentUser,
   updateAvatar,
+  verificationUser,
+  reVerificationUser,
 } = require("../services/usersServices");
 
-const User = require("../db/schemas/usersSchema");
+const User = require("../db/schemas/usersSchema.js");
 
 const jwt = require("jsonwebtoken");
 
@@ -14,13 +16,21 @@ const gravatar = require("gravatar");
 
 const { SECRET_KEY } = process.env;
 
-const { NotAuthorizedError, ConflictError } = require("../helpers/errors");
+const {
+  NotAuthorizedError,
+  ConflictError,
+  WrongParametersError,
+} = require("../helpers/errors.js");
 
 const fs = require("fs");
 
 const path = require("path");
 
 const jimp = require("jimp");
+
+const { v4: uuidv4 } = require("uuid");
+
+const sendgridMailer = require("../helpers/sendgridMailer.js");
 
 const createUserController = async (req, res) => {
   const { email, password } = req.body;
@@ -30,9 +40,13 @@ const createUserController = async (req, res) => {
     throw new ConflictError(`Email:${email} in use`);
   }
 
-  const user = new User({ email, avatarURL: avatar });
+  const token = uuidv4();
+
+  const user = new User({ email, avatarURL: avatar, verifyToken: token });
   user.setPassword(password);
   const data = await createUser(user);
+
+  await sendgridMailer(email, token);
 
   res.json({ status: "Created", code: 201, data });
 };
@@ -42,6 +56,9 @@ const loginUserController = async (req, res) => {
   const user = await User.findOne({ email });
   if (!user || !user.comparePassword(password)) {
     throw new NotAuthorizedError("Email or password is wrong");
+  }
+  if (!user.verify) {
+    throw new NotAuthorizedError("Please confirm your email address");
   }
   const { _id } = user;
   const payload = { _id };
@@ -106,10 +123,51 @@ const updateAvatarController = async (req, res) => {
   });
 };
 
+const verificationUserController = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verifyToken: verificationToken });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const { _id } = user;
+  await verificationUser(_id);
+  res.json({
+    status: "success",
+    code: 200,
+    message: "Verification successful",
+  });
+};
+
+const reVerificationUserController = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    throw new WrongParametersError("missing required field email");
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  if (user.verify) {
+    throw new WrongParametersError("Verification has already been passed");
+  }
+
+  const verifyToken = await reVerificationUser(email);
+  // console.log(verifyToken);
+  await sendgridMailer(email, verifyToken);
+
+  res.json({
+    status: "Ok",
+    code: 200,
+    message: "Verification email sent",
+  });
+};
+
 module.exports = {
   createUserController,
   loginUserController,
   logoutUserController,
   getCurrentUserController,
   updateAvatarController,
+  verificationUserController,
+  reVerificationUserController,
 };
