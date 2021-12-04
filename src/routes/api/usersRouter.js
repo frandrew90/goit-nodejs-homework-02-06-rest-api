@@ -1,6 +1,9 @@
 const express = require("express");
 const router = new express.Router();
-const { userValidation } = require("../../middlewares/validation.js");
+const {
+  userValidation,
+  verifyValidation,
+} = require("../../middlewares/validation.js");
 const { asyncWrapper } = require("../../helpers/apiHelpers.js");
 const { authValidation } = require("../../middlewares/authValidation.js");
 const {
@@ -9,6 +12,8 @@ const {
   logoutUserController,
   getCurrentUserController,
   updateAvatarController,
+  verificationUserController,
+  reVerificationUserController,
 } = require("../../controllers/usersController.js");
 
 const upload = require("../../middlewares/upload.js");
@@ -22,6 +27,15 @@ router.patch(
   upload.single("avatar"),
   authValidation,
   asyncWrapper(updateAvatarController)
+);
+router.get(
+  "/verify/:verificationToken",
+  asyncWrapper(verificationUserController)
+);
+router.post(
+  "/verify",
+  verifyValidation,
+  asyncWrapper(reVerificationUserController)
 );
 
 module.exports = { usersRouter: router };

@@ -26,10 +26,25 @@ const updateAvatar = async (_id, avatar) => {
   return avatarURL;
 };
 
+const verificationUser = async (_id) => {
+  await User.findByIdAndUpdate(_id, {
+    verifyToken: null,
+    verify: true,
+  });
+};
+
+const reVerificationUser = async (email) => {
+  const { verifyToken } = await User.findOne({ email });
+  // console.log(verifyToken);
+  return verifyToken;
+};
+
 module.exports = {
   createUser,
   loginUser,
   logoutUser,
   getCurrentUser,
   updateAvatar,
+  verificationUser,
+  reVerificationUser,
 };

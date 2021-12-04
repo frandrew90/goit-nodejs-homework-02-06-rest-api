@@ -33,4 +33,16 @@ const userValidation = (req, res, next) => {
   next();
 };
 
-module.exports = { contactsValidation, userValidation };
+const verifyValidation = (req, res, next) => {
+  const validationSchema = joi.object({
+    email: joi.string().required(),
+  });
+
+  const validationResult = validationSchema.validate(req.body);
+  if (validationResult.error) {
+    next(new ValidationError(validationResult.error));
+  }
+  next();
+};
+
+module.exports = { contactsValidation, userValidation, verifyValidation };
